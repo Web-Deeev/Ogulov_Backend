@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.apps import apps
+from shop.models import Category, Product, ProductImage, Order, OrderItem
+
 
 # Безопасно достаем модели из ядра Django, чтобы избежать сбоев импорта
 Category = apps.get_model('shop', 'Category')
@@ -43,9 +45,41 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ['title', 'slug_id']
     # Подключаем галерею картинок прямо внутрь карточки товара
     inlines = [ProductImageInline]
+    
+    
+    prepopulated_fields = {'slug_id': ('title',)}
+
 
     def img_preview(self, obj):
         if obj.image:
             return mark_safe(f'<img src="{obj.image.url}" width="50" style="border-radius: 4px;" />')
         return "Нет фото"
     img_preview.short_description = "Фото"
+
+
+class OrderItemInline(admin.TabularInline):
+    """
+    Выводит список купленных товаров прямо внутрь карточки заказа.
+    Менеджер клиники сразу видит, что именно купили.
+    """
+    model = OrderItem
+    extra = 0  # Нам не нужно добавлять пустые строки товаров вручную
+    # Запрещаем менять товары и цену уже оформленного заказа, чтобы не ломать фин. отчетность
+    readonly_fields = ('product', 'quantity', 'price')
+    can_delete = False  
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    # Колонки в общем списке заказов
+    list_display = ('id', 'status', 'name', 'phone', 'has_user', 'created_at')
+    list_display_links = ('id', 'name')
+    # Удобные фильтры справа для обработки новых заявок
+    list_filter = ('status', 'created_at')
+    search_fields = ('id', 'name', 'phone')
+    inlines = [OrderItemInline]
+
+    # Красивый boolean-индикатор (зеленая галочка/красный крестик) в общей таблице
+    @admin.display(boolean=True, description="Из личного кабинета?")
+    def has_user(self, obj):
+        return obj.user is not None

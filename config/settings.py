@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # Мои приложения
     'rest_framework',
     'corsheaders',
+    'users',
     'shop',
 ] 
 
@@ -128,8 +129,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+AUTH_USER_MODEL = 'users.User'
+
 
 CORS_ALLOW_ALL_ORIGINS = True
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
