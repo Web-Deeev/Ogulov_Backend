@@ -1,12 +1,18 @@
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny  # 🟢 ДОБАВЛЕНО: Права открытого доступа для гостей
 from django.db.models import Q
 from shop.models import Category, Product  # Модульный импорт из пакета моделей
 from shop.serializers import CategorySerializer, ProductSerializer  # Модульный импорт из пакета сериализаторов
+
 
 # 1. Представление для категорий
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer  # Указываем напрямую вместо get_serializer_class
+
+    # 🟢 ИСПРАВЛЕНО: Открываем дерево категорий для гостей без авторизации
+    def get_permissions(self):
+        return [AllowAny()]
 
 
 # 2. Представление для товаров
@@ -16,6 +22,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     
     # Железобетонный фикс деталки: поиск индивидуального товара по строковому slug_id!
     lookup_field = 'slug_id'
+
+    # 🟢 ИСПРАВЛЕНО: Открываем витрину товаров для гостей без авторизации
+    def get_permissions(self):
+        return [AllowAny()]
 
     def get_queryset(self):
         queryset = super().get_queryset()

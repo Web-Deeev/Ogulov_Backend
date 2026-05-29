@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.apps import apps
+from django.db import models
+from django import forms  # 🎯 ИСПРАВЛЕНО: Добавили импорт форм для переопределения виджетов
 from shop.models import Category, Product, ProductImage, Order, OrderItem
-
 
 # Безопасно достаем модели из ядра Django, чтобы избежать сбоев импорта
 Category = apps.get_model('shop', 'Category')
@@ -46,9 +47,21 @@ class ProductAdmin(admin.ModelAdmin):
     # Подключаем галерею картинок прямо внутрь карточки товара
     inlines = [ProductImageInline]
     
-    
     prepopulated_fields = {'slug_id': ('title',)}
 
+    ordering = ('id',) 
+
+    # 🎯 СЕНЬОР-СТОПОР ДЛЯ СТРЕЛОЧЕК БРАУЗЕРА:
+    # Заставляем числовые поля рендериться в HTML с атрибутом min="0.00"
+    formfield_overrides = {
+        models.DecimalField: {
+            'widget': forms.NumberInput(attrs={
+                'min': '0.00', 
+                'step': '0.01',
+                'style': 'width: 130px; font-weight: bold;'
+            })
+        },
+    }
 
     def img_preview(self, obj):
         if obj.image:

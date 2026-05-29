@@ -1,21 +1,28 @@
 from rest_framework import serializers
+from decimal import Decimal
 from shop.models import Category, Product, ProductImage  # Чистый импорт без костылей!
 
-# 1. Сериализатор для категорий товара
+# =========================================================================
+# 1. СЕРИАЛИЗАТОР ДЛЯ КАТЕГОРИЙ ТОВАРA
+# =========================================================================
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'title', 'slug', 'parent']
 
 
-# 2. Сериализатор для картинок из галереи
+# =========================================================================
+# 2. СЕРИАЛИЗАТОР ДЛЯ КАРТИНОК ИЗ ГАЛЕРЕИ
+# =========================================================================
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = ['id', 'image']
 
 
-# 3. Главный сериализатор для товаров
+# =========================================================================
+# 3. ГЛАВНЫЙ СЕРИАЛИЗАТОР ДЛЯ ТОВАРОВ С СЕНЬОР-ВАЛИДАЦИЕЙ ОТ МИНУСА
+# =========================================================================
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     additional_images = ProductImageSerializer(many=True, read_only=True)
@@ -30,6 +37,18 @@ class ProductSerializer(serializers.ModelSerializer):
             'image', 'additional_images', 'in_stock', 'label', 
             'description', 'specs', 'is_hit', 'is_new', 'created_at'
         ]
+
+    # 🎯 ЖЕЛЕЗОБЕТОННЫЙ ПЕРЕХВАТ МИНУСА ДЛЯ ТЕКУЩЕЙ ЦЕНЫ (-0.13 больше не пройдет)
+    def validate_price(self, value):
+        if value < Decimal('0.00'):
+            raise serializers.ValidationError("Цена товара не может быть отрицательной!")
+        return value
+
+    # 🎯 ЖЕЛЕЗОБЕТОННЫЙ ПЕРЕХВАТ МИНУСА ДЛЯ СТАРOЙ ЦЕНЫ
+    def validate_old_price(self, value):
+        if value is not None and value < Decimal('0.00'):
+            raise serializers.ValidationError("Старая цена товара не может быть отрицательной!")
+        return value
 
     def get_formatted_price(self, obj):
         if obj.price is None:
