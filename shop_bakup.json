@@ -1,0 +1,260 @@
+[
+{
+    "model": "shop.category",
+    "pk": 1,
+    "fields": {
+        "title": "Книги",
+        "slug": "books",
+        "parent": null
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 2,
+    "fields": {
+        "title": "Плакаты Огулова А.Т.",
+        "slug": "posters",
+        "parent": null
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 3,
+    "fields": {
+        "title": "Микросферы",
+        "slug": "microsphers",
+        "parent": null
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 4,
+    "fields": {
+        "title": "Устройство очистки ПВВК",
+        "slug": "pvvk",
+        "parent": null
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 5,
+    "fields": {
+        "title": "Скребки/Массажеры",
+        "slug": "scrabs",
+        "parent": null
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 6,
+    "fields": {
+        "title": "Банки",
+        "slug": "banks",
+        "parent": null
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 7,
+    "fields": {
+        "title": "Остальные категории",
+        "slug": "others",
+        "parent": null
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 8,
+    "fields": {
+        "title": "Пищевые добавки/БАД",
+        "slug": "bady",
+        "parent": null
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 9,
+    "fields": {
+        "title": "Фульво-гуминовые комплексы",
+        "slug": "bady-fulvo",
+        "parent": 8
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 10,
+    "fields": {
+        "title": "Мужское и женское здоровье",
+        "slug": "bady-health",
+        "parent": 8
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 11,
+    "fields": {
+        "title": "VITAUCT",
+        "slug": "bady-vitauct",
+        "parent": 8
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 12,
+    "fields": {
+        "title": "Сила пчелы",
+        "slug": "bady-bee-power",
+        "parent": 8
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 13,
+    "fields": {
+        "title": "Травы и мёд",
+        "slug": "bady-herb-honey",
+        "parent": 8
+    }
+},
+{
+    "model": "shop.category",
+    "pk": 14,
+    "fields": {
+        "title": "Чай",
+        "slug": "bady-tea",
+        "parent": 8
+    }
+},
+{
+    "model": "shop.product",
+    "pk": 1,
+    "fields": {
+        "slug_id": "pvvk",
+        "category": 4,
+        "title": "Бутылка-термос ПВВК (Арт. 2077)",
+        "price": "4200.00",
+        "old_price": null,
+        "image": "product/pvvk_zvSYalg.jpeg",
+        "in_stock": true,
+        "label": "Хит",
+        "description": "Фирменная бутылка-термос ПВВК из высококачественной медицинской нержавеющей пищевой стали марки 18/8. Электрополированные внутренние стенки обеспечивают идеальную гигиеничность и сохраняют структуру очищенной воды.",
+        "specs": "Артикул: 2077; Объем: 700 мл (27oz); Вес: 200 г; Размеры: 245x73 мм; Диаметр горлышка: 4.4 см; Материал: медицинская сталь 18/8",
+        "is_hit": false,
+        "is_recommend": true,
+        "is_new": true,
+        "created_at": "2026-05-28T16:22:16.510Z"
+    }
+},
+{
+    "model": "shop.product",
+    "pk": 2,
+    "fields": {
+        "slug_id": "microsphers",
+        "category": 3,
+        "title": "Подушка для структурирования с наполнителем из микросфер (Арт. 2155)",
+        "price": "6500.00",
+        "old_price": null,
+        "image": "product/podyshkas.png",
+        "in_stock": true,
+        "label": null,
+        "description": "Наполнитель из микросфер натриевоборосиликатного стекла (15 микрон) и аморфного диоксида кремния. Возвращает тепловые волны, обеспечивая глубокую релаксацию.",
+        "specs": "Артикул: 2155; Наполнитель: микросферы натриевоборосиликатного стекла и аморфного диоксида кремния; Размер сферы: 15 микрон",
+        "is_hit": false,
+        "is_recommend": false,
+        "is_new": false,
+        "created_at": "2026-05-28T16:24:40.830Z"
+    }
+},
+{
+    "model": "shop.product",
+    "pk": 3,
+    "fields": {
+        "slug_id": "tea",
+        "category": 14,
+        "title": "Тысячелистник трава, 50 г (Арт. 1540)",
+        "price": "400.00",
+        "old_price": "500.00",
+        "image": "product/tea.jpg",
+        "in_stock": true,
+        "label": "Скидка",
+        "description": "Натуральное фитосырье высокого качества. Обладает выраженным антибактериальным, противовоспалительным и желчегонным эффектом. Стимулирует работу органов пищеварения и подготавливает ЖКТ к мануальным практикам.',",
+        "specs": "Артикул: 1540; Вес: 50 г; Форма выпуска: Высушенная измельченная трава",
+        "is_hit": false,
+        "is_recommend": false,
+        "is_new": false,
+        "created_at": "2026-05-28T16:27:09.696Z"
+    }
+},
+{
+    "model": "shop.product",
+    "pk": 4,
+    "fields": {
+        "slug_id": "posters",
+        "category": 2,
+        "title": "Плакат 3 в 1",
+        "price": "3100.00",
+        "old_price": null,
+        "image": "product/plakat_trZJ7qM.jpg",
+        "in_stock": true,
+        "label": "Хит",
+        "description": "Информационный наглядный плакат формата А3, отображающий ключевые проекционные зоны и схемы взаимодействия внутренних органов на теле человека.",
+        "specs": "Формат: А3; Материал: Плотная ламинация; Тип: Настенный'",
+        "is_hit": true,
+        "is_recommend": false,
+        "is_new": false,
+        "created_at": "2026-05-28T16:29:28.421Z"
+    }
+},
+{
+    "model": "shop.product",
+    "pk": 5,
+    "fields": {
+        "slug_id": "others",
+        "category": 7,
+        "title": "Пластырь \"Витон\"",
+        "price": "550.00",
+        "old_price": "649.99",
+        "image": "product/plastr.jpg",
+        "in_stock": true,
+        "label": "Скидка",
+        "description": "Оздоровительный био-пластырь на основе экстрактов целебных трав. Снимает локальные болевые ощущения в суставах.",
+        "specs": "В комплекте: 8 шт; Время действия: до 12 часов; Состав: растительный",
+        "is_hit": false,
+        "is_recommend": true,
+        "is_new": false,
+        "created_at": "2026-05-28T16:31:37.579Z"
+    }
+},
+{
+    "model": "shop.productimage",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "image": "product/gallery/pvvk2_TeP1Uf6.jpeg"
+    }
+},
+{
+    "model": "shop.productimage",
+    "pk": 2,
+    "fields": {
+        "product": 1,
+        "image": "product/gallery/pvvk3_taJGTrK.jpeg"
+    }
+},
+{
+    "model": "shop.productimage",
+    "pk": 3,
+    "fields": {
+        "product": 2,
+        "image": "product/gallery/podyshka2.jpg"
+    }
+},
+{
+    "model": "shop.productimage",
+    "pk": 4,
+    "fields": {
+        "product": 4,
+        "image": "product/gallery/plakat_2_YSzOzv5.jpg"
+    }
+}
+]
