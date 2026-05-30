@@ -14,7 +14,7 @@ ProductImage = apps.get_model('shop', 'ProductImage')
 # Настраиваем inline-вывод галереи картинок прямо внутри карточки товара
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1  # Количество пустых слотов для загрузки доп. фото по умолчанию
+    extra = 3  # Количество пустых слотов для загрузки доп. фото по умолчанию
     fields = ['image', 'preview']
     readonly_fields = ['preview']
 

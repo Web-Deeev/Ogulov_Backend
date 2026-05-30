@@ -12,6 +12,8 @@ urlpatterns = [
     
     path('api/', include('shop.urls')),
     
+    path('api/clinic/', include('clinic.urls')),
+    
 ]
 
 
