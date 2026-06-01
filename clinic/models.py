@@ -72,11 +72,14 @@ class DoctorGallery(models.Model):
     class Meta:
         verbose_name = "Фотография галереи врача"
         verbose_name_plural = "Галерея картинок врача"
-
+        ordering = ['id']
   
     def __str__(self):
-        if self.doctor_id:
-            return f"Фото для врача: {self.doctor.name}"
+        try:
+            if self.doctor and self.doctor.name:
+                return f"Фото для врача: {self.doctor.name}"
+        except (Doctor.DoesNotExist, AttributeError):
+            pass
         return f"Фото в галерее (ID: {self.id or 'Новое'})"
 
 
@@ -117,3 +120,55 @@ class ClinicGallery(models.Model):
 
     def __str__(self):
         return self.title if self.title else f"Фото центра #{self.id}"
+    
+    
+
+
+class CallbackLead(models.Model):
+    """
+    Модель для хранения заявок на прием (Лидов) с фронтенд-форм.
+    """
+    name = models.CharField(
+        max_length=150, 
+        verbose_name="Имя пациента"
+    )
+    phone = models.CharField(
+        max_length=20, 
+        verbose_name="Номер телефона"
+    )
+    comment = models.TextField(
+        blank=True, 
+        default="", 
+        verbose_name="Комментарий пациента"
+    )
+    
+    # Поля для связи с сущностью (Врач или Методика)
+    target_type = models.CharField(
+        max_length=100, 
+        verbose_name="Тип сущности (Врач/Методика)"
+    )
+    target_id = models.IntegerField(
+        null=True, 
+        blank=True, 
+        verbose_name="ID сущности"
+    )
+    
+    # Системные поля автоматизации
+    is_processed = models.BooleanField(
+        default=False, 
+        db_index=True, 
+        verbose_name="Обработано администратором"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        db_index=True, 
+        verbose_name="Дата создания"
+    )
+
+    class Meta:
+        verbose_name = "Заявка на прием"
+        verbose_name_plural = "Заявки на прием"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Заявка от {self.name} ({self.phone}) — {self.created_at.strftime('%d.%m.%Y %H:%M')}"
