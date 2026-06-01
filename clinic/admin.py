@@ -1,6 +1,6 @@
 from django.contrib import admin
 # Импортируем все три модели
-from .models import Doctor, MedicalMethod, MethodGallery 
+from .models import Doctor, DoctorGallery, MedicalMethod, MethodGallery, ClinicAward, ClinicGallery 
 
 # 1. СОЗДАЕМ ИНЛАЙН-КЛАСС НАСТРОЙКИ (Django нужен именно он)
 class MethodGalleryInline(admin.TabularInline):
@@ -15,9 +15,13 @@ class MedicalMethodAdmin(admin.ModelAdmin):
     search_fields = ('title',)
     prepopulated_fields = {'slug': ('title',)}
     
-    # ИСПРАВЛЕНО: Передаем именно инлайн-класс настроек интерфейса, а не модель БД
     inlines = [MethodGalleryInline]
 
+
+class DoctorGalleryInline(admin.TabularInline):
+    model = DoctorGallery
+    extra = 3
+    fields = ('image',)
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
@@ -28,3 +32,17 @@ class DoctorAdmin(admin.ModelAdmin):
     list_filter = ('exp',)
     prepopulated_fields = {'slug': ('name',)}
     filter_horizontal = ('methods',)
+
+    inlines = [DoctorGalleryInline]
+    
+    
+@admin.register(ClinicAward)
+class ClinicAwardAdmin(admin.ModelAdmin):
+    list_display = ('title', 'award_type', 'created_at')
+    list_filter = ('award_type',)
+    search_fields = ('title',)
+
+
+@admin.register(ClinicGallery)
+class ClinicGalleryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'created_at')
