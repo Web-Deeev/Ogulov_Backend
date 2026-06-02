@@ -1,5 +1,47 @@
+import os
 from django.db import models
 
+
+class ClinicAbout(models.Model):
+
+    title = models.CharField(max_length=200, default="О клинике")
+    description = models.TextField(help_text="Основной текст описания")
+    
+    # Блок основателя
+    founder_name = models.CharField(max_length=200, default="Огулов Александр Тимофеевич")
+    founder_photo = models.ImageField(upload_to="clinic/founders/", blank=True, null=True)
+    founder_description = models.TextField(help_text="Описание достижений основателя")
+    
+    # Медиа
+    video_url = models.URLField(help_text="Ссылка на YouTube видео")
+    video_preview = models.ImageField(upload_to="clinic/video/", blank=True, null=True)
+    
+    is_active = models.BooleanField(default=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "О клинике (Главная)"
+        verbose_name_plural = "О клинике (Главная)"
+
+    def __str__(self):
+        return f"{self.title} (Обновлено: {self.updated_at.strftime('%d.%m.%Y')})"
+
+
+class ClinicGalleryImage(models.Model):
+    """
+    Галерея изображений. Принцип OCP: можем добавлять сколько угодно фото 
+    без изменения модели самой клиники.
+    """
+    about_clinic = models.ForeignKey(ClinicAbout, on_delete=models.CASCADE, related_name="gallery_images")
+    image = models.ImageField(upload_to="clinic/gallery/")
+    alt_text = models.CharField(max_length=200, blank=True, help_text="Для SEO оптимизации")
+    order = models.PositiveIntegerField(default=0, db_index=True, help_text="Сортировка")
+
+    class Meta:
+        ordering = ['order']
+
+
+# методики
 class MedicalMethod(models.Model):
     slug = models.SlugField(unique=True, max_length=255, verbose_name="SEO Slug методики")
     title = models.CharField(max_length=255, verbose_name="Название методики")
@@ -23,15 +65,25 @@ class MethodGallery(models.Model):
         verbose_name="Методика"
     )
     image = models.ImageField(upload_to='methods/gallery/', verbose_name="Дополнительное фото")
+    
+    # поле для кастомной сортировки в слайдере
+    sort_order = models.PositiveIntegerField(
+        default=0,
+        db_index=True,  
+        verbose_name="Порядок в слайдере",
+        help_text="Чем меньше число, тем раньше фото отобразится в слайдере"
+    )
 
     class Meta:
         verbose_name = "Фотография галереи"
         verbose_name_plural = "Галерея картинок методики"
+        ordering = ['sort_order', 'id']
 
     def __str__(self):
-        return f"Фото для методики: {self.method.title}"
+        return f"Слайд №{self.sort_order} для методики: {self.method.title}"
 
 
+#Специалисты
 class Doctor(models.Model):
     slug = models.SlugField(unique=True, max_length=255, verbose_name="SEO Slug врача")
     name = models.CharField(max_length=255, verbose_name="ФИО Врача")
@@ -49,7 +101,7 @@ class Doctor(models.Model):
         blank=True
     )
 
-    # ИСПРАВЛЕНО: Мета-класс и сортировка возвращены законному владельцу — модели Doctor
+   
     class Meta:
         verbose_name = "Врач"
         verbose_name_plural = "Врачи"
@@ -83,6 +135,8 @@ class DoctorGallery(models.Model):
         return f"Фото в галерее (ID: {self.id or 'Новое'})"
 
 
+
+#Награды
 class ClinicAward(models.Model):
     TYPE_CHOICES = [
         ('diploma', 'Диплом'),
@@ -121,9 +175,30 @@ class ClinicGallery(models.Model):
     def __str__(self):
         return self.title if self.title else f"Фото центра #{self.id}"
     
+
+
+class BannerSlide(models.Model):
+    title = models.CharField(max_length=255, verbose_name="Заголовок слайда")
+    subtitle = models.CharField(max_length=255, blank=True, null=True, verbose_name="Надзаголовок (подзаголовок)")
+    text = models.TextField(verbose_name="Описание / Текст слайда")
+    image = models.ImageField(upload_to="clinic/banners/", verbose_name="Фоновое изображение")
+    button_text = models.CharField(max_length=100, default="Подробнее", verbose_name="Текст кнопки")
+    link = models.CharField(max_length=255, default="/contacts", verbose_name="Ссылка для кнопки")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок сортировки")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+
+    class Meta:
+        verbose_name = "Слайд баннера"
+        verbose_name_plural = "Слайды баннера"
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title
+
+    
     
 
-
+#Форма записи
 class CallbackLead(models.Model):
     """
     Модель для хранения заявок на прием (Лидов) с фронтенд-форм.

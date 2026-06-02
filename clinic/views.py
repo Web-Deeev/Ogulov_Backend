@@ -1,15 +1,43 @@
-from django.db.models import Prefetch  # ИСПРАВЛЕНО: Добавлен объект для глубокого пресэмплинга
-from rest_framework import mixins, viewsets
+from django.db.models import Prefetch  
+from rest_framework import mixins, viewsets, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
-from .models import CallbackLead, ClinicAward, ClinicGallery, Doctor, MedicalMethod
+from .models import (
+    CallbackLead, 
+    ClinicAward, 
+    ClinicGallery, 
+    Doctor, 
+    MedicalMethod,  
+    BannerSlide,
+    ClinicAbout,
+)
+
 from .serializers import (
     CallbackLeadSerializer,
     ClinicAwardSerializer,
     ClinicGallerySerializer,
     DoctorSerializer,
     MedicalMethodSerializer,
+    BannerSlideSerializer,
+    ClinicAboutSerializer,
 )
+
+
+
+class ClinicAboutView(APIView):
+    """
+    Отдает только активную информацию о клинике. 
+    Исключаем N+1 через prefetch_related для галереи.
+    """
+    def get(self, request):
+        about_data = ClinicAbout.objects.filter(is_active=True).prefetch_related('gallery_images').first()
+        if not about_data:
+            return Response({"detail": "Контент еще не заполнен"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ClinicAboutSerializer(about_data, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class DoctorViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,6 +71,12 @@ class ClinicAwardViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = ClinicAward.objects.all()
     serializer_class = ClinicAwardSerializer
+    permission_classes = [AllowAny]
+
+
+class BannerSlideViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = BannerSlide.objects.filter(is_active=True)
+    serializer_class = BannerSlideSerializer
     permission_classes = [AllowAny]
 
 

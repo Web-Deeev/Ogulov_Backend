@@ -1,14 +1,48 @@
 from django.contrib import admin
 
 from .models import (
-    CallbackLead,  # ИСПРАВЛЕНО: Добавлен импорт новой модели лидов
+    CallbackLead, 
     ClinicAward,
     ClinicGallery,
     Doctor,
     DoctorGallery,
     MedicalMethod,
     MethodGallery,
+    BannerSlide,
+    ClinicAbout,         # 1. Импортируем модель описания
+    ClinicGalleryImage,    # 2. Импортируем модель картинок галереи
 )
+
+
+# =========================================================================
+# ИНФОРМАЦИЯ О КЛИНИКЕ И ЕЕ ГАЛЕРЕЯ (INLINE)
+# =========================================================================
+class ClinicGalleryImageInline(admin.TabularInline):
+    """Позволяет загружать фотографии галереи прямо со страницы 'О клинике'"""
+    model = ClinicGalleryImage
+    extra = 4  # Сразу показываем 4 поля для загрузки (под твою сетку на фронте)
+    fields = ("image", "alt_text", "order")
+
+
+@admin.register(ClinicAbout)
+class ClinicAboutAdmin(admin.ModelAdmin):
+    list_display = ("title", "founder_name", "is_active", "updated_at")
+    list_editable = ("is_active",)
+    search_fields = ("title", "founder_name")
+    inlines = [ClinicGalleryImageInline]
+    
+    # Разделяем поля на логические блоки для удобства администрирования
+    fieldsets = (
+        ("Главный блок", {
+            "fields": ("title", "description", "is_active")
+        }),
+        ("Основатель клиники", {
+            "fields": ("founder_name", "founder_photo", "founder_description")
+        }),
+        ("Медиа контент", {
+            "fields": ("video_url", "video_preview")
+        }),
+    )
 
 
 # =========================================================================
@@ -16,7 +50,7 @@ from .models import (
 # =========================================================================
 class MethodGalleryInline(admin.TabularInline):
     model = MethodGallery
-    extra = 3  # Сколько пустых полей для загрузки фото показывать по умолчанию
+    extra = 3  
     fields = ("image",)
 
 
@@ -43,7 +77,7 @@ class DoctorAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("exp",)
     prepopulated_fields = {"slug": ("name",)}
-    filter_horizontal = ("methods",)  # Удобный UI для выбора связей ManyToMany
+    filter_horizontal = ("methods",)  
     inlines = [DoctorGalleryInline]
 
 
@@ -67,12 +101,17 @@ class ClinicGalleryAdmin(admin.ModelAdmin):
     list_filter = ("created_at",)
 
 
+@admin.register(BannerSlide)
+class BannerSlideAdmin(admin.ModelAdmin):
+    list_display = ('title', 'order', 'is_active')
+    list_editable = ('order', 'is_active')
+
+
 # =========================================================================
 # ИНТЕРФЕЙС УПРАВЛЕНИЯ ЗАЯВКАМИ ПАЦИЕНТОВ (CALLBACK LEADS)
 # =========================================================================
 @admin.register(CallbackLead)
 class CallbackLeadAdmin(admin.ModelAdmin):
-    # Поля, которые администратор видит сразу в таблице
     list_display = (
         "name", 
         "phone", 
@@ -80,15 +119,7 @@ class CallbackLeadAdmin(admin.ModelAdmin):
         "is_processed", 
         "created_at"
     )
-    
-    # Клик по чекбоксу "Обработано" доступен прямо из общего списка без захода внутрь
     list_editable = ("is_processed",)
-    
-    # Быстрые фильтры в правой панели админки
     list_filter = ("is_processed", "target_type", "created_at")
-    
-    # Живой поиск по ключевым данным пациента
     search_fields = ("name", "phone", "comment")
-    
-    # Защита данных: администратор может читать заявку, но дата создания фиксируется базой
     readonly_fields = ("created_at",)

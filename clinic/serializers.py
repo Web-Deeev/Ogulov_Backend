@@ -1,4 +1,5 @@
-import re  # ИСПРАВЛЕНО: Добавлен обязательный импорт для работы валидации телефона
+import re 
+from .models import BannerSlide, ClinicAbout, ClinicGalleryImage
 
 from rest_framework import serializers
 
@@ -10,7 +11,25 @@ from .models import (
     DoctorGallery,
     MedicalMethod,
     MethodGallery,
+    BannerSlide,
 )
+
+class GalleryImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClinicGalleryImage
+        fields = ['id', 'image', 'alt_text']
+
+class ClinicAboutSerializer(serializers.ModelSerializer):
+    
+    gallery_images = GalleryImageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ClinicAbout
+        fields = [
+            'title', 'description', 'founder_name', 'founder_photo', 
+            'founder_description', 'video_url', 'video_preview', 'gallery_images'
+        ]
+
 
 
 # 1. Сериализатор галереи картинок МЕТОДИКИ
@@ -63,7 +82,14 @@ class ClinicGallerySerializer(serializers.ModelSerializer):
         fields = ['id', 'image', 'title']
 
 
-# 7. Сериализатор лидов / заявок на прием
+#7. Сериализатор баннеров для главной страницы
+class BannerSlideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BannerSlide
+        fields = ['id', 'title', 'subtitle', 'text', 'image', 'button_text', 'link']
+
+
+# 8. Сериализатор лидов / заявок на прием
 class CallbackLeadSerializer(serializers.ModelSerializer):
     class Meta:
         model = CallbackLead
