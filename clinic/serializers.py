@@ -20,7 +20,7 @@ class GalleryImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image', 'alt_text']
 
 class ClinicAboutSerializer(serializers.ModelSerializer):
-    
+    # Вложенный сериализатор для галереи (DRY/SOLID)
     gallery_images = GalleryImageSerializer(many=True, read_only=True)
 
     class Meta:

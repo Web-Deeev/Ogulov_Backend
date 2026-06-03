@@ -1,7 +1,7 @@
 import os
 from django.db import models
 
-
+#слайдер 
 class ClinicAbout(models.Model):
 
     title = models.CharField(max_length=200, default="О клинике")
@@ -39,6 +39,7 @@ class ClinicGalleryImage(models.Model):
 
     class Meta:
         ordering = ['order']
+
 
 
 # методики
@@ -81,6 +82,7 @@ class MethodGallery(models.Model):
 
     def __str__(self):
         return f"Слайд №{self.sort_order} для методики: {self.method.title}"
+
 
 
 #Специалисты
