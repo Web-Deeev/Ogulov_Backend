@@ -73,13 +73,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ogulov_clinic_db',
-        'USER': 'ogulov_admin',
-        'PASSWORD': 'super_secret_123',
-        'HOST': '127.0.0.1',
+        'NAME': os.environ.get('POSTGRES_DB', 'ogulov_clinic_db'),
+        'USER': os.environ.get('POSTGRES_USER', 'ogulov_admin'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'super_secret_123'),
+        # 🔥 ПУЛЕНЕПРОБИВАЕМО: Если переменной DATABASE_HOST нет в окружении,
+        # (например, при запуске локально через .venv), Django возьмет '127.0.0.1'.
+        # А внутри Docker Compose мы эту переменную сейчас явно передадим!
+        'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
         'PORT': '5432',
     }
 }

@@ -1,30 +1,32 @@
-# 1. Берем Python 3.12 ( slim-версия, чтобы контейнер не весил много)
+# 1. Берем чистый Python 3.12
 FROM python:3.12-slim
 
-# 2. Защита, чтобы Питон не оставлял мусорные файлы
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# 3. Нужные инструменты для сборки некоторых библиотек
+# 2. Ставим системные инструменты
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# 4. Копируем список покупок и скачиваем их
+# 3. Копируем требования и устанавливаем их глобально
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir gunicorn  # 🔥 Насильно доставляем gunicorn в глобальный PATH
 
-# 5. Создаем безопасного пользователя clinic_user, чтобы код не работал от опасного root-админа
+# 4. Создаем безопасного пользователя
 RUN useradd -m clinic_user && chown -R clinic_user:clinic_user /app
 USER clinic_user
 
-# 6. Копируем весь остальной код бэкенда в коробку
+# 5. Копируем весь код проекта
 COPY --chown=clinic_user:clinic_user . .
 
 EXPOSE 8000
 
-# 7. Запускаем! Название config.wsgi меняем, если твоя папка называется иначе
+# 6. Запускаем наш мотор! 
+# ВНИМАНИЕ: Если твоя папка с файлом wsgi.py называется не config, а ogulov_clinic, 
+# то замени "config.wsgi" на "ogulov_clinic.wsgi"
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
