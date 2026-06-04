@@ -28,7 +28,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # 4. Проверяем код
+    # 4. Проверяем код (передаем фейковые переменные, чтобы Django не ругался на пустой .env)
     - name: Run Django Tests
+      env:
+        DJANGO_SECRET_KEY: "ci-test-secret-key-ogulov-clinic-2026"
+        DJANGO_DEBUG: "True"
+        POSTGRES_DB: "test_db"
+        POSTGRES_USER: "test_user"
+        POSTGRES_PASSWORD: "test_password_123"
+        DATABASE_HOST: "127.0.0.1" # Робот будет гонять тесты в своей локальной памяти СУБД SQLite
       run: |
         python manage.py test --noinput || echo "Синтаксис в порядке!"

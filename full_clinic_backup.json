@@ -1,5 +1,34 @@
 [
 {
+    "model": "sessions.session",
+    "pk": "3ja33p57mvn7gtk4z8fdljvksyzpyf7b",
+    "fields": {
+        "session_data": ".eJxVjMEOwiAQRP-FsyEsRbAevfcbyLILUjWQlPZk_Hdp0oOeJpn3Zt7C47Zmv7W4-JnFVYA4_XYB6RnLDviB5V4l1bIuc5C7Ig_a5FQ5vm6H-3eQseW-NjpAhBGc1irRxZBlxex0ckhnVB1ZE3EYewLY7qrBUohoEQIBJ_H5AtbROBI:1wV4vm:FP-VH1k4fRyUm0L7wQkRpeKfWrVy5Q59nSEV0dWQiS8",
+        "expire_date": "2026-06-18T10:04:06.997Z"
+    }
+},
+{
+    "model": "users.user",
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$Cx4hu9J2Kbpm3UqCKip9Ep$CfIEw/EQTgtwNq/ulSfddl/uWgNqn6TS4JSgnktTly8=",
+        "last_login": "2026-06-04T10:04:06.989Z",
+        "is_superuser": true,
+        "username": "super",
+        "first_name": "",
+        "last_name": "",
+        "email": "www@gamil.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-06-04T10:03:00.237Z",
+        "patronymic": null,
+        "phone": null,
+        "birth_date": null,
+        "address": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
     "model": "shop.category",
     "pk": 1,
     "fields": {
