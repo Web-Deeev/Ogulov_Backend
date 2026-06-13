@@ -166,3 +166,15 @@ SIMPLE_JWT = {
 
     'JTI_CLAIM': 'jti',
 }
+
+
+# Разрешаем Django принимать POST-запросы/сессии админки с порта фронтенда Vite
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Настройки для локальной разработки без HTTPS-сертификатов
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False

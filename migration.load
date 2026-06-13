@@ -1,0 +1,7 @@
+load database
+     from sqlite:///home/vaio/Ogulov_Back/back/db.sqlite3
+     into postgresql://ogulov_admin:super_secret_password_123@127.0.0.1:5432/ogulov_clinic_db
+
+ with include drop, create tables, create indexes, reset sequences
+
+  set work_mem to '16MB', maintenance_work_mem to '512MB';

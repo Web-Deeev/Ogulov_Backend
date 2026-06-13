@@ -17,8 +17,9 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 # 2. Представление для товаров
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Product.objects.all().prefetch_related('additional_images')
-    serializer_class = ProductSerializer  # Указываем напрямую вместо get_serializer_class
+    # Добавляем СРАЗУ И prefetch_related И select_related
+    queryset = Product.objects.all().select_related('category').prefetch_related('additional_images')
+    serializer_class = ProductSerializer
     
     # Железобетонный фикс деталки: поиск индивидуального товара по строковому slug_id!
     lookup_field = 'slug_id'
@@ -28,6 +29,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         return [AllowAny()]
 
     def get_queryset(self):
+        # 🎯 Сеньор-оптимизация: берем уже оптимизированный базовый кверисет (с джоинами)
         queryset = super().get_queryset()
         category_slug = self.request.query_params.get('category')
         if category_slug:
