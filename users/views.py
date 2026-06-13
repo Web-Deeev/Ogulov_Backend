@@ -46,6 +46,70 @@ class UserLoginView(APIView):
         except User.DoesNotExist:
             return Response({"detail": "Пользователь с таким номером телефона не найден."}, status=status.HTTP_401_UNAUTHORIZED)
 
+
+class UserRegisterView(APIView):
+    """
+    Эндпоинт регистрации новых пользователей/пациентов клиники.
+    Открыт для анонимных пользователей (AllowAny).
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        data = request.data
+        raw_phone = data.get('username') or data.get('phone')
+        password = data.get('password')
+
+        if not raw_phone or not password:
+            return Response({"detail": "Номер телефона и пароль обязательны для регистрации!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Стандартизируем username по номеру телефона (как в UserLoginView)
+        username = "".join(c for c in str(raw_phone) if c.isalnum()).lower()
+
+        try:
+            with transaction.atomic():
+                # Создаем базового пользователя Django безопасным методом
+                user = User.objects.create_user(
+                    username=username,
+                    password=password,
+                    email=data.get('email') or data.get('regEmail') or '',
+                    first_name=data.get('first_name') or data.get('firstName') or '',
+                    last_name=data.get('last_name') or data.get('lastName') or ''
+                )
+                
+                # Если у твоей кастомной модели User есть отдельное поле phone, заполняем его
+                if hasattr(user, 'phone'):
+                    user.phone = data.get('phone') or str(raw_phone)
+                    user.save()
+
+            # Генерируем JWT-токены, чтобы пользователь автоматически авторизовался после регистрации
+            refresh = RefreshToken.for_user(user)
+            
+            return Response({
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "phone": getattr(user, 'phone', '')
+                },
+                "detail": "Регистрация прошла успешно!"
+            }, status=status.HTTP_201_CREATED)
+
+        except IntegrityError:
+            return Response(
+                {"detail": "Пользователь с таким номером телефона уже зарегистрирован в системе."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"detail": f"Не удалось создать профиль. Ошибка: {str(e)}"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
 class UserProfileView(APIView):
     # Строгая авторизация. Битые/отсутствующие токены DRF сам отсечет со статусом 401
     permission_classes = [IsAuthenticated]
@@ -75,6 +139,7 @@ class UserProfileView(APIView):
             "refresh": str(refresh),
             "user": serializer.data
         }, status=status.HTTP_200_OK)
+
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
